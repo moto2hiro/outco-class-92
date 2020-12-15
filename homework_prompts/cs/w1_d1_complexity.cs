@@ -22,16 +22,38 @@ class Complexity
 
   Reduce the following into it's Big-O order of magnitude.
 
-  1. 5 + N                    Answer:
-  2. N + N^2                  Answer:
-  3. 15N + 13N                Answer:
-  4. 10000                    Answer:
-  5. log(N) + 1               Answer:
-  6. log(N) * 3 + 14N + 3     Answer:
-  7. Nlog(N) + 3N^2           Answer:
-  8. N^3 + log(N^4)           Answer:
-  9. N! + 180000N^2           Answer:
-  10. 15002^N                 Answer:
+  1. 5 + N                    Answer: O(N)
+  = 1 + N // remove constants
+  = N // remove lower orders
+
+  2. N + N^2                  Answer: O(N^2)
+  = N^2 // remove lower orders
+  
+  3. 15N + 13N                Answer: O(N)
+  = 28N
+  = N // remove constants
+  
+  4. 10000                    Answer: O(1)
+  = 1 // remove constants
+  
+  5. log(N) + 1               Answer: O(log n)
+  = log(N) // remove lower orders
+  
+  6. log(N) * 3 + 14N + 3     Answer: O(N)
+  = 14N // remove lower orders
+  = N // remove constants
+  
+  7. Nlog(N) + 3N^2           Answer: O(N^2)
+  = 3N^2 // remove lower orders
+  = N^2 // remove constants
+  
+  8. N^3 + log(N^4)           Answer: O(N^3)
+  = N^3 // remove lower orders
+  
+  9. N! + 180000N^2           Answer: O(N!)
+  = N! // remove lower orders
+
+  10. 15002^N                 Answer: O(c^n) where c = 15002 so O(15002^n)
   */
 
 
@@ -50,8 +72,10 @@ class Complexity
   [9, 83, 74], 8 --> -1
   [6, 4, 7, 9, 7, 8, 2, 4, 3], 7 --> 2
 
-  Time Complexity:
-  Auxiliary Space Complexity:
+  Time Complexity: O(N)
+  - Worst case is when we won't find target at all and loop through the entire array.
+  Auxiliary Space Complexity: O(1)
+  - We only have the index variable i.
 
   */
   public static int indexOf(int[] arr, int target)
@@ -80,8 +104,10 @@ class Complexity
   [9, 83, 74] --> [74]
   [6, 4, 7, 9, 7, 8, 2, 4, 3] --> [6, 4, 8, 2, 4]
 
-  Time Complexity:
-  Auxiliary Space Complexity:
+  Time Complexity: O(N)
+  - No matter what we will have to loop through the entire array.
+  Auxiliary Space Complexity: O(N)
+  - Worst case is when the entire arr is even and have to save all of it inside results variable.
 
   */
   public static List<int> evens(int[] arr)
@@ -111,8 +137,10 @@ class Complexity
   [0, 1, -1] --> 0
   [] --> 0
 
-  Time Complexity:
-  Auxiliary Space Complexity:
+  Time Complexity: O(N)
+  - We have to loop through the entire array.
+  Auxiliary Space Complexity: O(1)
+  - The variables total and i will both have a constant size of memory.
 
   */
   public static int sum(int[] arr)
@@ -140,8 +168,14 @@ class Complexity
   [12, 25, 40], [20, 37, 45] --> [12, 20, 25, 37, 40, 45]
   [10, 13, 24], [12, 35] --> [10, 12, 13, 24, 35]
 
-  Time Complexity:
-  Auxiliary Space Complexity:
+  Time Complexity: O(N + M)
+  - arr1: O(N) b/c loop
+  - arr2: O(M) b/c loop
+  Auxiliary Space Complexity: O(N + M)
+  - i, j, k, totalElements: constant
+  - result:
+    - N from arr1 b/c we init size of array.
+    - M from arr2 b/c we init size of array.
 
   */
   public static int[] merge(int[] arr1, int[] arr2)
@@ -185,8 +219,13 @@ class Complexity
   [5, 7, 10, 12, 14], 7 --> 1
   [2, 4, 8, 9, 15], 3 --> -1
 
-  Time Complexity:
-  Auxiliary Space Complexity:
+  Time Complexity: O(logN)
+  - Size 1 = 1 loop
+  - Size 10 = 3 loops
+  - Size 100 = 8 loops
+  - The number operations doesn't linearly grow, but is less.
+  Auxiliary Space Complexity: O(1)
+  - low, high, mid are all constant sizes.
 
   */
   public static int binarySearch(int[] arr, int val)
@@ -227,8 +266,15 @@ class Complexity
   1 --> 1 (1)
   9 --> 362880 (9 * 8 * 7 * 6 * 5 * 4 * 3 * 2 * 1)
 
-  Time Complexity:
-  Auxiliary Space Complexity:
+  Time Complexity: O(N)
+  - n = 1: 1 operation.
+  - n = 10: repeat the factorial method 10 times.
+  - n = 100: repeat the factorial method 100 times.
+  - The amount of times the factorial method gets called is proportional to the size of the input.
+  Auxiliary Space Complexity: O(N)
+  - n = 10: need to have memory space for factorial(9), factorial(8), ... factorial(1)
+  - n = 100: need to have memory space for factorial(99), factorial(98), ... factorial(1)
+  - The space required is proportional to the size of the input.
 
   */
   public static int factorial(int n)
@@ -243,8 +289,11 @@ class Complexity
 
   /*  First Times Last
    *
-   *  Time Complexity:
-   *  Auxiliary Space Complexity:
+   *  Time Complexity: O(1)
+   *  - No loops.
+   *  - Number of operations is constant.
+   *  Auxiliary Space Complexity: O(1)
+   *  - Constant number/size of variables.
    */
   public static int firstTimesLast(int[] arr)
   {
@@ -263,8 +312,10 @@ class Complexity
 
   /*  Most Frequent Occurrence
    *
-   *  Time Complexity:
-   *  Auxiliary Space Complexity:
+   *  Time Complexity: O(N)
+   *  - 2N loops reduced to N
+   *  Auxiliary Space Complexity: O(N)
+   *  - Worst case scnenario is when all letters in the string are unique, then we need memory to count for each letter.
    */
   public static char mostFrequentOccurrence(string str)
   {
@@ -302,8 +353,10 @@ class Complexity
 
   /* Print Unordered Pairs
    *
-   *  Time Complexity:
-   *  Auxiliary Space Complexity:
+   *  Time Complexity: O(N^2)
+   *  - Nested loops.
+   *  Auxiliary Space Complexity: O(1)
+   *  - i, j are constant memory sizes. 
    */
   public static void printUnorderedPairs(int[] arr)
   {
@@ -319,8 +372,10 @@ class Complexity
 
   /**
    *  Make Combined Matrix
-   *  Time Complexity:
-   *  Auxiliary Space Complexity:
+   *  Time Complexity: O(NM)
+   *  - Multiply nested loops of array size N and array size M.
+   *  Auxiliary Space Complexity: O(NM)
+   *  - Matrix w/the dimensions N x M
    */
   public static int[,] makeCombinedMatrix(int[] arr1, int[] arr2)
   {
@@ -340,8 +395,10 @@ class Complexity
   /**
    *  Nth Fibonacci
    *
-   *  Time Complexity:
-   *  Auxiliary Space Complexity:
+   *  Time Complexity: O(N)
+   *  - Loop increases as n increases proportionally.
+   *  Auxiliary Space Complexity: O(N)
+   *  - We need memory inside result for n - 1, n - 2, ... , 0
    */
   public static int nthFibonacci(int n)
   {
@@ -363,9 +420,13 @@ class Complexity
 
   /* Nth Fibonacci - the return
    *
-   *  Time Complexity:
-   *  Auxiliary Space Complexity:
-   */
+   *  Time Complexity: O(N)
+   *  - Because we won't have to re-compute cached values, we would have to compute only each Fibonacci value once.
+   *  - i.e. just compute Fib(N), Fib(N - 1), ... , 2
+   *  Auxiliary Space Complexity: O(N)
+   *  - We would have memory for each computed Fibonacci value.
+   *  - i.e. memory for Fib(N - 1), Fib(N - 2), ..., F(3)
+ */
   class NthFib
   {
 
