@@ -8,32 +8,48 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-class Problems {
- /**
-   *
-   * Unique
-   *
-   * Given an array of integers, return a list with all duplicates removed.*
-   *
-   * Parameters
-   * Input: arr {Array of Integers}
-   * Output: {List of Integers}
-   *
-   * Constraints
-   *
-   * Time: O(N)
-   * Space: O(N)
-   *
-   * Examples
-   * [1, 2, 4, 4, 5, 6] --> [1, 2, 4, 5, 6]
-   * [1, 1, 2, 2, 3, 3]' --> [1, 2, 3]
-   * [1, 2, 3, 1, 2] --> [1, 2, 3]
-   */
+class Problems
+{
+  /**
+    *
+    * Unique
+    *
+    * Given an array of integers, return a list with all duplicates removed.*
+    *
+    * Parameters
+    * Input: arr {Array of Integers}
+    * Output: {List of Integers}
+    *
+    * Constraints
+    *
+    * Time: O(N)
+    * Space: O(N)
+    *
+    * Examples
+    * [1, 2, 4, 4, 5, 6] --> [1, 2, 4, 5, 6]
+    * [1, 1, 2, 2, 3, 3]' --> [1, 2, 3]
+    * [1, 2, 3, 1, 2] --> [1, 2, 3]
+    */
 
-    public static List<int> unique(int[] arr) {
-        // YOUR WORK HERE
-        return new List<int>();
+  public static List<int> unique(int[] arr)
+  {
+    var ret = new List<int>();
+    if (arr == null)
+    {
+      return ret;
     }
+
+    var numTracker = new HashSet<int>(); // Space is O(N)
+    foreach (var i in arr) // Time is O(N)
+    {
+      if (!numTracker.Contains(i)) // Time is O(N) b/c HashSet
+      {
+        ret.Add(i);
+        numTracker.Add(i);
+      }
+    }
+    return ret;
+  }
 
 
   /**
@@ -61,38 +77,77 @@ class Problems {
     * 'It's a man, it's a plane, it's superman!' --> '{ its: 3, a: 2, man: 1, plane: 1, superman: 1 }'`
     */
 
-    public static Dictionary<string, int> wordCount(string sentence) {
-        // YOUR WORK HERE
-        return new Dictionary<string, int>();
-
+  public static Dictionary<string, int> wordCount(string sentence)
+  {
+    var ret = new Dictionary<string, int>();
+    if (string.IsNullOrWhiteSpace(sentence))
+    {
+      return ret;
     }
 
-
- /**
-   * RGB Set
-   *
-   * Given a string of characters where each character is either 'r', 'g', or 'b',
-   * determine the number of complete sets of 'rgb' that can be made with the
-   * characters.
-   *
-   * Parameters
-   * Input: str {string}
-   * Output: {int}
-   *
-   * Constraints
-   * Time: O(N)
-   * Space: O(1)
-   *
-   * Examples
-   * `'rgbrgb' --> 2`
-   * `'rbgrbrgrgbgrrggbbbbrgrgrgrg' --> 7`
-   * `'bbrr' --> 0`
-   */
-
-    public static int rgb(string str) {
-        // YOUR WORK HERE
-        return -1;
+    sentence = sentence.ToLowerInvariant();
+    foreach (var p in new string[] { ".", ",", "!", "'" }) // Time and Space is O(1)
+    {
+      sentence = sentence.Replace(p, "");
     }
+
+    foreach (var word in sentence.Split(" ")) // Time is O(N)
+    {
+      if (ret.ContainsKey(word)) // Time is O(1) b/c HashTable
+      {
+        ret[word] += 1;
+      }
+      else
+      {
+        ret.Add(word, 1);
+      }
+    }
+    return ret;
+  }
+
+
+  /**
+    * RGB Set
+    *
+    * Given a string of characters where each character is either 'r', 'g', or 'b',
+    * determine the number of complete sets of 'rgb' that can be made with the
+    * characters.
+    *
+    * Parameters
+    * Input: str {string}
+    * Output: {int}
+    *
+    * Constraints
+    * Time: O(N)
+    * Space: O(1)
+    *
+    * Examples
+    * `'rgbrgb' --> 2`
+    * `'rbgrbrgrgbgrrggbbbbrgrgrgrg' --> 7`
+    * `'bbrr' --> 0`
+    */
+  private const int R_IDX = 0;
+  private const int G_IDX = 1;
+  private const int B_IDX = 2;
+  public static int rgb(string str)
+  {
+    if (string.IsNullOrWhiteSpace(str))
+    {
+      return 0;
+    }
+
+    var rgbTracker = new int[] { 0, 0, 0 }; // Space is O(1)
+    foreach (var s in str.ToLowerInvariant()) // Time is O(N)
+    {
+      if (s == 'r')
+        rgbTracker[R_IDX] += 1;
+      else if (s == 'g')
+        rgbTracker[G_IDX] += 1;
+      else if (s == 'b')
+        rgbTracker[B_IDX] += 1;
+    }
+    return rgbTracker.Min();
+  }
 
 
   /**
@@ -116,35 +171,80 @@ class Problems {
     * `6, [6, 4, 2, 1] --> [3, 5]`
     */
 
-    public static List<int> missingNumber(int n, int[] arr) {
-        // YOUR WORK HERE
-        return new List<int>();
+  public static List<int> missingNumber(int n, int[] arr)
+  {
+    var ret = new List<int>();
+    if (n <= 1)
+    {
+      return ret;
     }
 
+    var numTracker = new HashSet<int>(); // Space is O(N)
+    foreach (var i in arr) // Time is O(N)
+    {
+      if (!numTracker.Contains(i))
+      {
+        numTracker.Add(i);
+      }
+    }
 
- /**
-   * Letter Sort
-   *
-   * Given a string of lowercase letters, return the letters in sorted order.
-   *
-   * Parameters
-   * Input: str {string}
-   * Output: {string}
-   *
-   * Constraints
-   * Time: O(N)
-   * Space: O(N)
-   *
-   * Examples
-   * `hello --> ehllo`
-   * `whiteboard --> abdehiortw`
-   * `one --> eno`
-   */
+    var idx = 1;
+    while (idx <= n) // Time is O(N)
+    {
+      if (!numTracker.Contains(idx)) // Time is O(1) b/c HashSet
+      {
+        ret.Add(idx);
+      }
+      idx += 1;
+    }
+    return ret;
+  }
 
-   public static string letterSort(string str) {
-        // YOUR WORK HERE
-        return "";
-   }
+
+  /**
+    * Letter Sort
+    *
+    * Given a string of lowercase letters, return the letters in sorted order.
+    *
+    * Parameters
+    * Input: str {string}
+    * Output: {string}
+    *
+    * Constraints
+    * Time: O(N)
+    * Space: O(N)
+    *
+    * Examples
+    * `hello --> ehllo`
+    * `whiteboard --> abdehiortw`
+    * `one --> eno`
+    */
+  private static readonly char[] ALPHABETS = new char[]
+  {
+    'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
+    'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'
+  };
+  public static string letterSort(string str)
+  {
+    var ret = string.Empty;
+    if (string.IsNullOrWhiteSpace(str))
+    {
+      return ret;
+    }
+
+    str = str.ToLowerInvariant();
+    for (var i = 0; i < ALPHABETS.Length - 1; i++) // O(1) b/c ALPHABETS is constant
+    {
+      foreach (var s in str) // O(N)
+      {
+        if (s == ALPHABETS[i])
+        {
+          ret = string.Concat(ret, s);
+        }
+      }
+    }
+    return ret;
+  }
 
 
   /**
@@ -172,38 +272,106 @@ class Problems {
     * 'noon' --> 'no'
     */
 
-    public static string characterMode(string str) {
-        // YOUR WORK HERE
-        return "";
+  public static string characterMode(string str)
+  {
+    if (string.IsNullOrWhiteSpace(str))
+    {
+      return string.Empty;
     }
 
+    var strTracker = new Dictionary<char, int>();
+    foreach (var s in str.Replace(" ", "").ToLowerInvariant()) // Time is O(N)
+    {
+      if (strTracker.ContainsKey(s)) // Time is O(1)
+      {
+        strTracker[s] += 1;
+      }
+      else
+      {
+        strTracker.Add(s, 1);
+      }
+    }
 
- /**
-   * Sort Digits
-   *
-   * Given an integer, sort the digits in ascending order and return the new integer.
-   * Ignore leading zeros.
-   *
-   * Parameters
-   * Input: num {int}
-   * Output: {int}
-   *
-   * Constraints
-   * Do not convert the integer into a string or other data type.
-   *
-   * Time: O(N) where N is the number of digits.
-   * Space: O(1)
-   *
-   * Examples
-   * 8970 --> 789
-   * 32445 --> 23445
-   * 10101 --> 111
-   */
+    var max = strTracker.First();
+    var maxes = new List<char>() { max.Key };
+    foreach (var s in strTracker)
+    {
+      if (s.Key == max.Key)
+      {
+        continue;
+      }
+      if (s.Value > max.Value)
+      {
+        maxes.Clear();
+        maxes.Add(s.Key);
+        max = s;
+      }
+      else if (s.Value == max.Value)
+      {
+        maxes.Add(s.Key);
+      }
+    }
+    return string.Join(string.Empty, maxes);
+  }
 
-   public static int sortDigits(int n) {
-        // YOUR WORK HERE
-        return -1;
-   }
+
+  /**
+    * Sort Digits
+    *
+    * Given an integer, sort the digits in ascending order and return the new integer.
+    * Ignore leading zeros.
+    *
+    * Parameters
+    * Input: num {int}
+    * Output: {int}
+    *
+    * Constraints
+    * Do not convert the integer into a string or other data type.
+    *
+    * Time: O(N) where N is the number of digits.
+    * Space: O(1)
+    *
+    * Examples
+    * 8970 --> 789
+    * 32445 --> 23445
+    * 10101 --> 111
+    */
+
+  private const int SCALE = 10;
+  public static int sortDigits(int n)
+  {
+    var num = n;
+    if (num < 0)
+    {
+      num = num * -1;
+    }
+
+    var numTracker = new int[10]; // Space is O(1)
+    var hasMoreScale = true;
+    while (hasMoreScale)
+    {
+      var mod = num % SCALE;
+      hasMoreScale = (mod != num);
+      num = num / SCALE;
+      numTracker[mod] += 1;
+    }
+
+    var ret = 0;
+    for (var i = 1; i < numTracker.Length; i++) // Time is O(1) b/c array is length of 10
+    {
+      if (numTracker[i] > 0)
+      {
+        var j = 0;
+        while (j < numTracker[i]) // Time is O(N)
+        {
+          ret = ret * SCALE;
+          ret += i;
+          j += 1;
+        }
+      }
+    }
+    return ret;
+  }
 
 
   /**
@@ -226,10 +394,36 @@ class Problems {
     *  [1, 2, 3, 4] --> []
     */
 
-    public static List<int> getDuplicates(int[] arr) {
-        // YOUR WORK HERE
-        return new List<int>();
+  public static List<int> getDuplicates(int[] arr)
+  {
+    var ret = new List<int>();
+    if (arr == null)
+    {
+      return ret;
     }
+
+    var numTracker = new Dictionary<int, int>(); // Space is O(N)
+    foreach (var i in arr) // Time is O(N)
+    {
+      if (numTracker.ContainsKey(i)) // Time is O(1) b/c HashTable
+      {
+        numTracker[i] += 1;
+      }
+      else
+      {
+        numTracker.Add(i, 1);
+      }
+    }
+
+    foreach (var i in numTracker) // Time is O(N)
+    {
+      if (i.Value > 1)
+      {
+        ret.Add(i.Key);
+      }
+    }
+    return ret;
+  }
 
 
   /**
@@ -256,43 +450,106 @@ class Problems {
     *  "racecar", "aaccrres" --> false
     */
 
-    public static bool anagramPair(string str1, string str2) {
-        // YOUR WORK HERE
-        return false;
+  public static bool anagramPair(string str1, string str2)
+  {
+    if (str1.Length != str2.Length)
+    {
+      return false;
     }
 
-
-   /**
-     *  Anagram Palindrome
-     *
-     *  Given a string, determine if the string can be rearranged to form a palindrome.
-     *
-     *  A palindrome is a word that is the same as its reversed. For example: "racecar"
-     *  and "noon" are palindromes because they match their reversed version
-     *  respectively. On the other hand, "cat" is not a palindrome because "cat"
-     *  does not equal "tac".
-     *
-     *  Parameters
-     *  Input: str {string}
-     *  Output: {bool}
-     *
-     *  Constraints
-     *
-     *  Assume the string only contains lowercase letters and no spaces.
-     *
-     *  Time: O(N)
-     *  Space: O(1)
-     *
-     *  Examples
-     *  `"carrace" --> true ("carrace" can be rearranged to "racecar")`
-     *  `"cat" --> false`
-     */
-
-    public static bool anagramPalindrome(string str) {
-        // YOUR WORK HERE
-        return false;
+    var str1Tracker = new Dictionary<char, int>();
+    foreach (var s in str1.ToLowerInvariant()) // Time is O(N)
+    {
+      if (str1Tracker.ContainsKey(s))
+      {
+        str1Tracker[s] += 1;
+      }
+      else
+      {
+        str1Tracker.Add(s, 1);
+      }
     }
 
+    var str2Tracker = new Dictionary<char, int>();
+    foreach (var s in str2.ToLowerInvariant()) // Time is O(N) b/c same length as str1
+    {
+      if (str2Tracker.ContainsKey(s))
+      {
+        str2Tracker[s] += 1;
+      }
+      else
+      {
+        str2Tracker.Add(s, 1);
+      }
+    }
+
+    foreach (var s in str1Tracker)
+    {
+      if (!str2Tracker.ContainsKey(s.Key) || str2Tracker[s.Key] != s.Value)
+      {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
+  /**
+    *  Anagram Palindrome
+    *
+    *  Given a string, determine if the string can be rearranged to form a palindrome.
+    *
+    *  A palindrome is a word that is the same as its reversed. For example: "racecar"
+    *  and "noon" are palindromes because they match their reversed version
+    *  respectively. On the other hand, "cat" is not a palindrome because "cat"
+    *  does not equal "tac".
+    *
+    *  Parameters
+    *  Input: str {string}
+    *  Output: {bool}
+    *
+    *  Constraints
+    *
+    *  Assume the string only contains lowercase letters and no spaces.
+    *
+    *  Time: O(N)
+    *  Space: O(1)
+    *
+    *  Examples
+    *  `"carrace" --> true ("carrace" can be rearranged to "racecar")`
+    *  `"cat" --> false`
+    */
+
+  public static bool anagramPalindrome(string str)
+  {
+    var alphaTracker = new Dictionary<char, int>(); // Space in O(1) b/c max 26 unique alphabets
+    str = str.ToLowerInvariant();
+    foreach (var s in str) // Time is O(N)
+    {
+      if (alphaTracker.ContainsKey(s))
+      {
+        alphaTracker[s] += 1;
+      }
+      else
+      {
+        alphaTracker.Add(s, 1);
+      }
+    }
+
+    var oddAlphas = 0;
+    foreach (var item in alphaTracker) // Time is O(1)
+    {
+      if (item.Value % 2 != 0)
+      {
+        oddAlphas += 1;
+        if (oddAlphas > 1)
+        {
+          return false; // can only have one odd
+        }
+      }
+    }
+    return true;
+  }
 }
 
 
