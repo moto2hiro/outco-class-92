@@ -19,8 +19,10 @@
  */
 
 using System;
+using System.Collections.Generic;
 
-class Problems {
+class Problems
+{
 
   /*
    *  Problem: Lattice Paths (Dynamic Programming Approach)
@@ -67,13 +69,30 @@ class Problems {
    *
    */
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-   public static int latticePaths(int m, int n) {
-     //YOUR WORK HERE
-     return -1;
-   }
+  // Time Complexity: O(N)
+  // Auxiliary Space Complexity: O(1)
 
+  /// <summary>
+  /// Find combination = n! / k! (n - k)!, n = number of elements and k = number of distinct elements.
+  /// Example: 3 X 2 
+  /// - All possible combinations: RRRDD, RRDDR, RDDDRR, DDRRR, RRDRD, RDRRD, RDRDR, DRRRD, DRRDR, DRDRR
+  /// - Which is just all the different combinations of 3 R's and 2 D's (m X n)
+  /// - We want to constantly do the division at the same time to keep the results at minimal to handle large numbers.
+  /// </summary>
+  /// <param name="m"></param>
+  /// <param name="n"></param>
+  /// <returns></returns>
+  public static long latticePaths(int x, int y)
+  {
+    var n = (long)(x + y);
+    var combinations = 1L;
+    for (var k = 1L; k <= x; k++) // since (n - k)! or y! will be canceled out
+    {
+      combinations *= n--; // just n * (n - 1) * (n - 2) ... (n - k) because (n - k)! will be canceled out
+      combinations /= k; // just k! because (n - k)! will be canceled out.
+    }
+    return combinations;
+  }
 }
 
 
@@ -82,50 +101,60 @@ class Problems {
 ////////////////////////////////////////////////////////////
 
 // use the Test class to run the test cases
-class Test{
+class Test
+{
 
-    public static void Main() {
-        int[] testCount = {0, 0};
-        Console.WriteLine("Lattice Paths Tests");
-        
-        runTest(latticPathTest1, "should work on a 2 x 3 lattice", testCount);
-        runTest(latticPathTest2, "should return the same for a 3 x 2 lattice", testCount);
-        runTest(latticPathTest3, "should return the same for a 0 x 0 lattice", testCount);
-        runTest(latticPathTest4, "should work for a 10 x 10 lattice (square input)", testCount);
-        runTest(latticPathTest5, "should work for a 17 x 14 lattice (large input)", testCount);
-        
-        Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
-	}
+  public static void Main()
+  {
+    int[] testCount = { 0, 0 };
+    Console.WriteLine("Lattice Paths Tests");
 
-    private static bool latticPathTest1() {
-        return Problems.latticePaths(2, 3) == 10;
+    runTest(latticPathTest1, "should work on a 2 x 3 lattice", testCount);
+    runTest(latticPathTest2, "should return the same for a 3 x 2 lattice", testCount);
+    runTest(latticPathTest3, "should return the same for a 0 x 0 lattice", testCount);
+    runTest(latticPathTest4, "should work for a 10 x 10 lattice (square input)", testCount);
+    runTest(latticPathTest5, "should work for a 17 x 14 lattice (large input)", testCount);
+
+    Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
+  }
+
+  private static bool latticPathTest1()
+  {
+    return Problems.latticePaths(2, 3) == 10;
+  }
+
+  private static bool latticPathTest2()
+  {
+    return Problems.latticePaths(3, 2) == 10;
+  }
+
+  private static bool latticPathTest3()
+  {
+    return Problems.latticePaths(0, 0) == 1;
+  }
+
+  private static bool latticPathTest4()
+  {
+    return Problems.latticePaths(10, 10) == 184756;
+  }
+
+  private static bool latticPathTest5()
+  {
+    return Problems.latticePaths(17, 14) == 265182525;
+  }
+
+  private static void runTest(Func<bool> test, string testName, int[] testCount)
+  {
+    testCount[1]++;
+    bool testPassed = false;
+    // Attempt to run test and suppress exceptions on failure
+    try
+    {
+      testPassed = test();
+      if (testPassed) testCount[0]++;
     }
-
-    private static bool latticPathTest2() {
-        return Problems.latticePaths(3, 2) == 10;
-    }
-
-    private static bool latticPathTest3() {
-        return Problems.latticePaths(0, 0) == 1;
-    }
-
-    private static bool latticPathTest4() {
-        return Problems.latticePaths(10, 10) == 184756;
-    }
-
-    private static bool latticPathTest5() {
-        return Problems.latticePaths(17, 14) == 265182525;
-    }
-
-    private static void runTest(Func<bool> test, string testName, int[] testCount){
-        testCount[1]++;
-        bool testPassed = false;
-        // Attempt to run test and suppress exceptions on failure
-        try {
-            testPassed = test();
-            if(testPassed) testCount[0]++;
-        } catch {}
-        string result = "  " + (testCount[1] + ")   ") + testPassed + " : " + testName;
-        Console.WriteLine(result);
-    } 
+    catch { }
+    string result = "  " + (testCount[1] + ")   ") + testPassed + " : " + testName;
+    Console.WriteLine(result);
+  }
 }
