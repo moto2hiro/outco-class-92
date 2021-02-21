@@ -268,73 +268,175 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
-class Matrix {
+class Matrix
+{
 
   private int m, n;
   private int[,] storage;
 
-  public Matrix(int m, int n){
+  public Matrix(int m, int n)
+  {
     this.m = m;
     this.n = n;
-    this.storage = new int[m,n];
+    this.storage = new int[m, n];
   }
 
-  public int getM() {return this.m;}
+  public int getM() { return this.m; }
 
-  public int getN() {return this.n;}
+  public int getN() { return this.n; }
 
-  public int[,] getStorage() {return this.storage;}
+  public int[,] getStorage() { return this.storage; }
 
 
-  public void print() {
+  public void print()
+  {
+    for (var i = 0; i < getM(); i++)
+    {
+      for (var j = 0; j < getN(); j++)
+      {
+        Console.Write($"{storage[i, j]} ");
+      }
+      Console.Write(Environment.NewLine + Environment.NewLine);
+    }
   }
 
-  public bool isValid(int i, int j) {
-    //YOUR WORK HERE
-    return false
+  public bool isValid(int i, int j)
+  {
+    return (i >= 0 && i <= getM() - 1 && j >= 0 && j <= getN() - 1);
   }
 
-  public void initialize(int[,] arrayOfArrays) {
+  public void initialize(int[,] arrayOfArrays)
+  {
+    if (arrayOfArrays == null) return;
+    this.m = arrayOfArrays.GetLength(0);
+    this.n = arrayOfArrays.GetLength(1);
+    this.storage = arrayOfArrays;
   }
 
-  public bool insert(int i, int j, int val) {
-    //YOUR WORK HERE
-    return false;
+  public bool insert(int i, int j, int val)
+  {
+    if (!isValid(i, j)) return false;
+    this.storage[i, j] = val;
+    return true;
   }
 
-  public int retrieve(int i, int j) {
-    //YOUR WORK HERE
-    return int.MinValue;
+  public int retrieve(int i, int j)
+  {
+    return (isValid(i, j)) ? this.storage[i, j] : int.MinValue;
   }
 
-  public void scale(int factor) {
-    //YOUR WORK HERE
+  public void scale(int factor)
+  {
+    if (this.storage == null) return;
+
+    for (var i = 0; i < getM(); i++)
+    {
+      for (var j = 0; j < getN(); j++)
+      {
+        insert(i, j, retrieve(i, j) * factor);
+      }
+    }
   }
 
-  public void fill(int val) {
-    //YOUR WORK HERE
+  public void fill(int val)
+  {
+    if (this.storage == null) return;
+
+    for (var i = 0; i < getM(); i++)
+    {
+      for (var j = 0; j < getN(); j++)
+      {
+        insert(i, j, val);
+      }
+    }
   }
 
-  public int[] flatten() {
-    //YOUR WORK HERE
-    return new int[]{};
+  public int[] flatten()
+  {
+    if (this.storage == null) return new int[] { };
+
+    var list = new List<int>();
+    for (var i = 0; i < getM(); i++)
+    {
+      for (var j = 0; j < getN(); j++)
+      {
+        list.Add(this.retrieve(i, j));
+      }
+    }
+    return list.ToArray();
   }
 
-  public Matrix slice(int[] rowRange, int[] colRange) {
-    //YOUR WORK HERE
-    return null;
+  public Matrix slice(int[] rowRange, int[] colRange)
+  {
+    if (rowRange == null || colRange == null) return null;
+    rowRange[0] = (rowRange[0] > 0) ? rowRange[0] : 0;
+    rowRange[1] = (rowRange[1] < getM()) ? rowRange[1] : getM();
+    colRange[0] = (colRange[0] > 0) ? colRange[0] : 0;
+    colRange[1] = (colRange[1] < getN()) ? colRange[1] : getN();
+
+    var row = 0;
+    var col = 0;
+    var newMatrix = new Matrix(rowRange[1] - rowRange[0], colRange[1] - colRange[0]);
+    for (var i = 0; i < getM(); i++)
+    {
+      if (i < rowRange[0] || i >= rowRange[1])
+      {
+        continue;
+      }
+      col = 0;
+      for (var j = 0; j < getN(); j++)
+      {
+        if (j < colRange[0] || j >= colRange[1])
+        {
+          continue;
+        }
+        newMatrix.insert(row, col, this.storage[i, j]);
+        col++;
+      }
+      row++;
+    }
+    return newMatrix;
   }
 
-  public Matrix transpose() {
-    //YOUR WORK HERE
-    return null;
+  public Matrix transpose()
+  {
+    var newMatrix = new Matrix(getN(), getM());
+    for (var i = 0; i < getM(); i++)
+    {
+      for (var j = 0; j < getN(); j++)
+      {
+        newMatrix.insert(j, i, this.storage[i, j]);
+      }
+    }
+    return newMatrix;
   }
 
-  public Matrix multiply(Matrix matrix) {
-    //YOUR WORK HERE
-    return null;
+  /// <summary>
+  /// M x N multiplied N x K = M x K
+  /// </summary>
+  /// <param name="matrix"></param>
+  /// <returns></returns>
+  public Matrix multiply(Matrix matrix)
+  {
+    if (matrix?.getM() != getN()) return null;
+
+    var newMatrix = new Matrix(getM(), matrix.getN());
+    for (var i = 0; i < getM(); i++)
+    {
+      for (var j = 0; j < matrix.getN(); j++)
+      {
+        newMatrix.insert(i, j, 0);
+        for (var k = 0; k < getN(); k++)
+        {
+          var newVal = newMatrix.retrieve(i, j) + (retrieve(i, k) * matrix.retrieve(k, j));
+          newMatrix.insert(i, j, newVal);
+        }
+      }
+    }
+    return newMatrix;
   }
 }
 
@@ -345,9 +447,11 @@ class Matrix {
 ////////////////////////////////////////////////////////////
 
 // use the Test class to run the test cases
-class Test{
+class Test
+{
 
-  public static void Main() {
+  public static void Main()
+  {
     isValidTests();
     initializeTests();
     insertTests();
@@ -360,8 +464,9 @@ class Test{
     multiplyTests();
   }
 
-  private static void isValidTests() {
-    int[] testCount = {0, 0};
+  private static void isValidTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("IsValid Tests");
     runTest(isValidTest1, "should return true for a valid set of coordinates", testCount);
     runTest(isValidTest2, "should return false for a set of coordinates off the matrix", testCount);
@@ -369,16 +474,18 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void initializeTests() {
-    int[] testCount = {0, 0};
+  private static void initializeTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Initialize Tests");
     runTest(initializeTest1, "should override m and n values in old matrix", testCount);
     runTest(initializeTest2, "should override contents of old matrix", testCount);
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void insertTests() {
-    int[] testCount = {0, 0};
+  private static void insertTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Insert Tests");
     runTest(insertTest1, "should return true if given valid coordinates", testCount);
     runTest(insertTest2, "should override old value in matrix given valid coordinates", testCount);
@@ -386,31 +493,35 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void retrieveTests() {
-    int[] testCount = {0, 0};
+  private static void retrieveTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Retrieve Tests");
     runTest(retrieveTest1, "should return correct value if given valid coordinates", testCount);
     runTest(retrieveTest2, "should return int.MinValue if given invalid coordinates", testCount);
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void scaleTests() {
-    int[] testCount = {0, 0};
+  private static void scaleTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Scale Tests");
     runTest(scaleTest1, "should scale values in matrix by amount given", testCount);
     runTest(scaleTest2, "should scale values in matrix by amount given", testCount);
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void fillTests() {
-    int[] testCount = {0, 0};
+  private static void fillTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Fill Tests");
     runTest(fillTest1, "should set all values in the matrix to given amount", testCount);
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void flattenTests() {
-    int[] testCount = {0, 0};
+  private static void flattenTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Flatten Tests");
     runTest(flattenTest1, "should work for a single column matrix", testCount);
     runTest(flattenTest2, "should work for a single row matrix", testCount);
@@ -418,8 +529,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void sliceTests() {
-    int[] testCount = {0, 0};
+  private static void sliceTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Slice Tests");
     runTest(sliceTest1, "should return 2x2 matrix slice from a 3x3 matrix when rowRange is [0,2] and colRange is [0,2]", testCount);
     runTest(sliceTest2, "should return 2x2 matrix slice from a 3x3 matrix when rowRange is [1,3] and colRange is [1,3]", testCount);
@@ -427,8 +539,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void transposeTests() {
-    int[] testCount = {0, 0};
+  private static void transposeTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Transpose Tests");
     runTest(transposeTest1, "should work correctly on a 1x1 matrix", testCount);
     runTest(transposeTest2, "should work correctly on a 2x2 matrix", testCount);
@@ -437,8 +550,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void multiplyTests() {
-    int[] testCount = {0, 0};
+  private static void multiplyTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Multiply Tests");
     runTest(multiplyTest1, "should work correctly on example matrix with valid input", testCount);
     runTest(multiplyTest2, "should work correctly on example matrix with invalid input of wrong dimensions", testCount);
@@ -447,194 +561,218 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static bool isValidTest1() {
+  private static bool isValidTest1()
+  {
     Matrix matrix = new Matrix(3, 4);
     return matrix.isValid(1, 1) == true;
   }
 
 
-  private static bool isValidTest2() {
+  private static bool isValidTest2()
+  {
     Matrix matrix = new Matrix(3, 4);
     return matrix.isValid(5, 1) == false;
   }
 
-  private static bool isValidTest3() {
+  private static bool isValidTest3()
+  {
     Matrix matrix = new Matrix(3, 4);
     return matrix.isValid(-4, 1) == false;
   }
 
 
-  private static bool initializeTest1() {
+  private static bool initializeTest1()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{1, 2, 3}, {4, 5, 6}});
+    matrix.initialize(new int[,] { { 1, 2, 3 }, { 4, 5, 6 } });
     return matrix.getM() == 2 && matrix.getN() == 3;
   }
 
-  private static bool initializeTest2() {
+  private static bool initializeTest2()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{1, 2}, {3, 4}});
+    matrix.initialize(new int[,] { { 1, 2 }, { 3, 4 } });
     int[,] storage = matrix.getStorage();
     return storage != null && storage.GetLength(0) == 2 && storage.GetLength(1) == 2
-    && storage[0,0] == 1 && storage[0,1] == 2 && storage[1,0] == 3 && storage[1,1] == 4;
+    && storage[0, 0] == 1 && storage[0, 1] == 2 && storage[1, 0] == 3 && storage[1, 1] == 4;
   }
 
 
-  private static bool insertTest1() {
+  private static bool insertTest1()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{1, 2, 3}, {4, 5, 6}});
+    matrix.initialize(new int[,] { { 1, 2, 3 }, { 4, 5, 6 } });
     return matrix.insert(1, 1, 50) == true;
   }
 
-  private static bool insertTest2() {
+  private static bool insertTest2()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{1, 2, 3}, {4, 5, 6}});
-    return matrix.insert(1, 1, 50) == true && matrix.getStorage()[1,1] == 50;
+    matrix.initialize(new int[,] { { 1, 2, 3 }, { 4, 5, 6 } });
+    return matrix.insert(1, 1, 50) == true && matrix.getStorage()[1, 1] == 50;
   }
 
-  private static bool insertTest3() {
+  private static bool insertTest3()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{1, 2, 3}, {4, 5, 6}});
+    matrix.initialize(new int[,] { { 1, 2, 3 }, { 4, 5, 6 } });
     return matrix.insert(5, 5, 10) == false;
   }
 
 
 
-  private static bool retrieveTest1() {
+  private static bool retrieveTest1()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1, 2},{3, 4, 5},{6, 7, 8}});
+    matrix.initialize(new int[,] { { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 } });
     return matrix.retrieve(1, 1) == 4;
   }
 
-  private static bool retrieveTest2() {
+  private static bool retrieveTest2()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1, 2},{3, 4, 5},{6, 7, 8}});
+    matrix.initialize(new int[,] { { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 } });
     return matrix.retrieve(10, 10) == int.MinValue;
   }
 
 
 
-  private static bool scaleTest1() {
+  private static bool scaleTest1()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1},{3, 4}});
+    matrix.initialize(new int[,] { { 0, 1 }, { 3, 4 } });
     matrix.scale(2);
     int[,] storage = matrix.getStorage();
-    return storage[0,0] == 0 &&  storage[0,1] == 2 &&
-          storage[1,0] == 6 &&  storage[1,1] == 8;
+    return storage[0, 0] == 0 && storage[0, 1] == 2 &&
+          storage[1, 0] == 6 && storage[1, 1] == 8;
   }
 
-  private static bool scaleTest2() {
+  private static bool scaleTest2()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1},{3, 4}});
+    matrix.initialize(new int[,] { { 0, 1 }, { 3, 4 } });
     matrix.scale(-3);
     int[,] storage = matrix.getStorage();
-    return storage[0,0] == 0 && storage[0,1] == -3 &&
-          storage[1,0] == -9 && storage[1,1] == -12;
+    return storage[0, 0] == 0 && storage[0, 1] == -3 &&
+          storage[1, 0] == -9 && storage[1, 1] == -12;
   }
 
 
 
-  private static bool fillTest1() {
+  private static bool fillTest1()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1},{3, 4}});
+    matrix.initialize(new int[,] { { 0, 1 }, { 3, 4 } });
     matrix.fill(2);
     int[,] storage = matrix.getStorage();
-    return storage[0,0] == 2 &&  storage[0,1] == 2 &&
-          storage[1,0] == 2 &&  storage[1,1] == 2;
+    return storage[0, 0] == 2 && storage[0, 1] == 2 &&
+          storage[1, 0] == 2 && storage[1, 1] == 2;
   }
 
 
 
-  private static bool flattenTest1() {
+  private static bool flattenTest1()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0}, {1}, {3}, {4}});
-    return matrix.flatten().SequenceEqual(new int[]{0, 1, 3, 4});
+    matrix.initialize(new int[,] { { 0 }, { 1 }, { 3 }, { 4 } });
+    return matrix.flatten().SequenceEqual(new int[] { 0, 1, 3, 4 });
   }
 
-  private static bool flattenTest2() {
+  private static bool flattenTest2()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1, 3, 4}});
-    return matrix.flatten().SequenceEqual(new int[]{0, 1, 3, 4});
+    matrix.initialize(new int[,] { { 0, 1, 3, 4 } });
+    return matrix.flatten().SequenceEqual(new int[] { 0, 1, 3, 4 });
   }
 
-  private static bool flattenTest3() {
+  private static bool flattenTest3()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}});
-    return matrix.flatten().SequenceEqual(new int[]{0, 1, 2, 3, 4, 5, 6, 7, 8});
+    matrix.initialize(new int[,] { { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 } });
+    return matrix.flatten().SequenceEqual(new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8 });
   }
 
 
 
-  private static bool sliceTest1() {
+  private static bool sliceTest1()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}});
-    Matrix newMatrix = matrix.slice(new int[]{0,2}, new int[]{0,2});
+    matrix.initialize(new int[,] { { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 } });
+    Matrix newMatrix = matrix.slice(new int[] { 0, 2 }, new int[] { 0, 2 });
     int[,] newMatrixStorage = newMatrix.getStorage();
     return newMatrix != null && newMatrix.getM() == 2 && newMatrix.getN() == 2 &&
-          newMatrixStorage[0,0] == 0 && newMatrixStorage[0,1] == 1 &&
-          newMatrixStorage[1,0] == 3 && newMatrixStorage[1,1] == 4;
+          newMatrixStorage[0, 0] == 0 && newMatrixStorage[0, 1] == 1 &&
+          newMatrixStorage[1, 0] == 3 && newMatrixStorage[1, 1] == 4;
   }
 
-  private static bool sliceTest2() {
+  private static bool sliceTest2()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}});
-    Matrix newMatrix = matrix.slice(new int[]{1,3}, new int[]{1,3});
+    matrix.initialize(new int[,] { { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 } });
+    Matrix newMatrix = matrix.slice(new int[] { 1, 3 }, new int[] { 1, 3 });
     int[,] newMatrixStorage = newMatrix.getStorage();
     return newMatrix != null && newMatrix.getM() == 2 && newMatrix.getN() == 2 &&
-          newMatrixStorage[0,0] == 4 && newMatrixStorage[0,1] == 5 &&
-          newMatrixStorage[1,0] == 7 && newMatrixStorage[1,1] == 8;
+          newMatrixStorage[0, 0] == 4 && newMatrixStorage[0, 1] == 5 &&
+          newMatrixStorage[1, 0] == 7 && newMatrixStorage[1, 1] == 8;
   }
 
-  private static bool sliceTest3() {
+  private static bool sliceTest3()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1, 2}, {3, 4, 5}, {6, 7, 8}});
-    Matrix newMatrix = matrix.slice(new int[]{-5,20}, new int[]{-2,6});
+    matrix.initialize(new int[,] { { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 } });
+    Matrix newMatrix = matrix.slice(new int[] { -5, 20 }, new int[] { -2, 6 });
     return array2DEquals(matrix.getStorage(), newMatrix.getStorage());
   }
 
 
 
-  private static bool transposeTest1() {
+  private static bool transposeTest1()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{1}});
+    matrix.initialize(new int[,] { { 1 } });
     Matrix newMatrix = matrix.transpose();
     return newMatrix != null && newMatrix.getM() == 1 && newMatrix.getN() == 1 &&
-          newMatrix.getStorage()[0,0] == 1;
+          newMatrix.getStorage()[0, 0] == 1;
   }
 
-  private static bool transposeTest2() {
+  private static bool transposeTest2()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1}, {2, 3}});
+    matrix.initialize(new int[,] { { 0, 1 }, { 2, 3 } });
     Matrix newMatrix = matrix.transpose();
     int[,] storage = newMatrix.getStorage();
     return newMatrix != null && newMatrix.getM() == 2 && newMatrix.getN() == 2 &&
-          storage[0,0] == 0 && storage[0,1] == 2 &&
-          storage[1,0] == 1 && storage[1,1] == 3;
+          storage[0, 0] == 0 && storage[0, 1] == 2 &&
+          storage[1, 0] == 1 && storage[1, 1] == 3;
   }
 
-  private static bool transposeTest3() {
+  private static bool transposeTest3()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1}, {3, 4}, {6, 7}});
+    matrix.initialize(new int[,] { { 0, 1 }, { 3, 4 }, { 6, 7 } });
     Matrix newMatrix = matrix.transpose();
     int[,] storage = newMatrix.getStorage();
     return newMatrix != null && newMatrix.getM() == 2 && newMatrix.getN() == 3 &&
-          storage[0,0] == 0 && storage[0,1] == 3 &&
-          storage[0,2] == 6 && storage[1,0] == 1 &&
-          storage[1,1] == 4 && storage[1,2] == 7;
+          storage[0, 0] == 0 && storage[0, 1] == 3 &&
+          storage[0, 2] == 6 && storage[1, 0] == 1 &&
+          storage[1, 1] == 4 && storage[1, 2] == 7;
   }
 
-  private static bool transposeTest4() {
+  private static bool transposeTest4()
+  {
     Matrix matrix = new Matrix(1, 1);
-    matrix.initialize(new int[,]{{0, 1, 3}, {4, 6, 7}});
+    matrix.initialize(new int[,] { { 0, 1, 3 }, { 4, 6, 7 } });
     Matrix newMatrix = matrix.transpose();
     int[,] storage = newMatrix.getStorage();
     return newMatrix != null && newMatrix.getM() == 3 && newMatrix.getN() == 2 &&
-          storage[0,0] == 0 && storage[0,1] == 4 &&
-          storage[1,0] == 1 && storage[1,1] == 6 &&
-          storage[2,0] == 3 && storage[2,1] == 7;
+          storage[0, 0] == 0 && storage[0, 1] == 4 &&
+          storage[1, 0] == 1 && storage[1, 1] == 6 &&
+          storage[2, 0] == 3 && storage[2, 1] == 7;
   }
 
 
-  private static bool multiplyTest1() {
+  private static bool multiplyTest1()
+  {
     Matrix matrix1 = new Matrix(1, 1);
     Matrix matrix2 = new Matrix(1, 1);
     matrix1.initialize(new int[,]{{4, 1, 3},
@@ -645,43 +783,46 @@ class Test{
     Matrix newMatrix = matrix1.multiply(matrix2);
     int[,] newMatrixstorage = newMatrix.getStorage();
     return newMatrix != null && newMatrix.getM() == 2 && newMatrix.getN() == 2 &&
-          newMatrixstorage[0,0] == 39 && newMatrixstorage[0,1] == 64 &&
-          newMatrixstorage[1,0] == 38 && newMatrixstorage[1,1] == 77;
+          newMatrixstorage[0, 0] == 39 && newMatrixstorage[0, 1] == 64 &&
+          newMatrixstorage[1, 0] == 38 && newMatrixstorage[1, 1] == 77;
   }
 
-  private static bool multiplyTest2() {
+  private static bool multiplyTest2()
+  {
     Matrix matrix1 = new Matrix(1, 1);
     Matrix matrix2 = new Matrix(1, 1);
     matrix1.initialize(new int[,]{{4, 1, 3},
                                   {3, 2, 5}});
-    matrix2.initialize(new int[,]{{8}});
+    matrix2.initialize(new int[,] { { 8 } });
     Matrix newMatrix = matrix1.multiply(matrix2);
     return newMatrix == null;
   }
 
-  private static bool multiplyTest3() {
+  private static bool multiplyTest3()
+  {
     Matrix matrix1 = new Matrix(1, 1);
     Matrix matrix2 = new Matrix(1, 1);
     matrix1.initialize(new int[,]{{4, 1, 3},
                                   {3, 2, 5}});
-    matrix2.initialize(new int[,]{{8}, {1}, {2}});
+    matrix2.initialize(new int[,] { { 8 }, { 1 }, { 2 } });
     Matrix newMatrix = matrix1.multiply(matrix2);
     int[,] newMatrixstorage = newMatrix.getStorage();
-    return newMatrix != null && newMatrix.getM()== 2 && newMatrix.getN() == 1 &&
-         newMatrixstorage[0,0] == 39 && newMatrixstorage[1,0] == 36;
+    return newMatrix != null && newMatrix.getM() == 2 && newMatrix.getN() == 1 &&
+         newMatrixstorage[0, 0] == 39 && newMatrixstorage[1, 0] == 36;
   }
 
-  private static bool multiplyTest4() {
+  private static bool multiplyTest4()
+  {
     Matrix matrix1 = new Matrix(1, 1);
     Matrix matrix2 = new Matrix(1, 1);
     matrix1.initialize(new int[,]{{4, 1, 3},
                                   {3, 2, 5}});
-    matrix2.initialize(new int[,]{{3, 5}});
+    matrix2.initialize(new int[,] { { 3, 5 } });
     Matrix newMatrix = matrix2.multiply(matrix1);
     int[,] newMatrixstorage = newMatrix.getStorage();
     return newMatrix != null && newMatrix.getM() == 1 && newMatrix.getN() == 3 &&
-         newMatrixstorage[0,0] == 27 && newMatrixstorage[0,1] == 13 &&
-         newMatrixstorage[0,2] == 34;
+         newMatrixstorage[0, 0] == 27 && newMatrixstorage[0, 1] == 13 &&
+         newMatrixstorage[0, 2] == 34;
   }
 
 
@@ -689,12 +830,13 @@ class Test{
 
 
   // function for checking if 2d arrays contain same elements in the same order
-  private static bool array2DEquals(int[,] data1, int[,] data2) {
-    if(data1 == null && data2 != null) return false;
-    if(data1 != null && data2 == null) return false;
-    if(data1 == null && data2 == null) return true;
+  private static bool array2DEquals(int[,] data1, int[,] data2)
+  {
+    if (data1 == null && data2 != null) return false;
+    if (data1 != null && data2 == null) return false;
+    if (data1 == null && data2 == null) return true;
     return data1.Rank == data2.Rank &&
-      Enumerable.Range(0,data1.Rank).All(dimension => data1.GetLength(dimension) == data2.GetLength(dimension)) &&
+      Enumerable.Range(0, data1.Rank).All(dimension => data1.GetLength(dimension) == data2.GetLength(dimension)) &&
       data1.Cast<int>().SequenceEqual(data2.Cast<int>());
   }
 
@@ -704,15 +846,18 @@ class Test{
   // string name : describes the test
   // int[] testCount : keeps track out how many tests pass and how many total
   //   in the form of a two item array i.e., [0, 0]
-  private static void runTest(Func<bool> test, string testName, int[] testCount){
-      testCount[1]++;
-      bool testPassed = false;
-      // Attempt to run test and suppress exceptions on failure
-      try {
-          testPassed = test();
-          if(testPassed) testCount[0]++;
-      } catch {}
-      string result = "  " + (testCount[1] + ")   ") + testPassed + " : " + testName;
-      Console.WriteLine(result);
+  private static void runTest(Func<bool> test, string testName, int[] testCount)
+  {
+    testCount[1]++;
+    bool testPassed = false;
+    // Attempt to run test and suppress exceptions on failure
+    try
+    {
+      testPassed = test();
+      if (testPassed) testCount[0]++;
+    }
+    catch { }
+    string result = "  " + (testCount[1] + ")   ") + testPassed + " : " + testName;
+    Console.WriteLine(result);
   }
 }
