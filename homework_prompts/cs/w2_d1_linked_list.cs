@@ -56,47 +56,151 @@
 
 using System;
 
-class ListNode {
+class ListNode
+{
   public int value;
   public ListNode next;
 
-  public ListNode(int value){
-    // YOUR WORK HERE
+  public ListNode(int value)
+  {
+    this.value = value;
   }
 }
 
 
-class LinkedList {
+class LinkedList
+{
   public int length = 0;
   public ListNode head;
   public ListNode tail;
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public void append(int value){
-    // YOUR WORK HERE
+  // Time Complexity: O(1)
+  // Auxiliary Space Complexity: O(1)
+  public void append(int value)
+  {
+    var newTail = new ListNode(value);
+    if (head == null)
+    {
+      head = newTail;
+      tail = head;
+      length++;
+      return;
+    }
+
+    var oldTail = tail;
+    oldTail.next = newTail;
+    tail = newTail;
+    length++;
   }
 
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public void insert(int value, int index){
-    // YOUR WORK HERE
+  // Time Complexity: O(N)
+  // Auxiliary Space Complexity: O(1)
+  public void insert(int value, int index)
+  {
+    if (index < 0) return;
+    if (head == null && index != 0) return;
+    if (head == null && index == 0)
+    {
+      this.append(value);
+      return;
+    }
+
+    var i = 0;
+    var node = head;
+    var isProcessing = true;
+    while (isProcessing)
+    {
+      if (node == null && i == index)
+      {
+        this.append(value);
+        isProcessing = false;
+      }
+      else if (i == index)
+      {
+        var oldNext = node.next;
+        var newNode = new ListNode(value) { next = oldNext };
+        if (index == 0)
+        {
+          head = newNode;
+        }
+        if (oldNext == null && length != 1)
+        {
+          tail = newNode;
+        }
+        node.next = newNode;
+        length++;
+        isProcessing = false;
+      }
+      else
+      {
+        node = node.next;
+        i++;
+      }
+    }
   }
 
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public void delete(int index){
-    // YOUR WORK HERE
+  // Time Complexity: O(N)
+  // Auxiliary Space Complexity: O(1)
+  public void delete(int index)
+  {
+    if (head == null) return;
+    if (index < 0) return;
+
+    var i = 0;
+    var previousNode = head;
+    var node = head.next;
+    while (true)
+    {
+      if (i == index)
+      {
+        if (index == 0)
+        {
+          head = node;
+        }
+        if (node?.next == null)
+        {
+          tail = node;
+        }
+        previousNode.next = node?.next;
+        length--;
+        return;
+      }
+      else if (node == null)
+      {
+        return;
+      }
+      else
+      {
+        previousNode = node;
+        node = node?.next;
+        i++;
+      }
+    }
   }
 
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public bool contains(int value){
-    // YOUR WORK HERE
-    return false;
+  // Time Complexity: O(N)
+  // Auxiliary Space Complexity: O(1)
+  public bool contains(int value)
+  {
+    var node = head;
+    while (true)
+    {
+      if (node?.value == value)
+      {
+        return true;
+      }
+      else if (node == null)
+      {
+        return false;
+      }
+      else
+      {
+        node = node.next;
+      }
+    }
   }
 }
 
@@ -106,19 +210,22 @@ class LinkedList {
 ////////////////////////////////////////////////////////////
 
 // use the Test class to run the test cases
-class Test{
+class Test
+{
 
-  public static void Main() {
+  public static void Main()
+  {
     listNodeClassTests();
     linkedListClassTests();
     linkedListInsertMethodTests();
     linkedListAppendMethodTests();
     linkedListDeleteMethodTests();
     linkedListContainsMethodTests();
-	}
+  }
 
-  private static void listNodeClassTests() {
-    int[] testCount = {0, 0};
+  private static void listNodeClassTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("ListNode Class");
     runTest(listNodeClassTest1, "able to create an instance", testCount);
     runTest(listNodeClassTest2, "has value field", testCount);
@@ -128,8 +235,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void linkedListClassTests() {
-    int[] testCount = {0, 0};
+  private static void linkedListClassTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("LinkedList Class");
     runTest(linkedListClassTest1, "able to create an instance", testCount);
     runTest(linkedListClassTest2, "has head field", testCount);
@@ -141,8 +249,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void linkedListInsertMethodTests() {
-    int[] testCount = {0, 0};
+  private static void linkedListInsertMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("LinkedList Insert Method");
     runTest(linkedListInsertMethodTest1, "has insert method", testCount);
     runTest(linkedListInsertMethodTest2, "able to insert a node into empty linked list", testCount);
@@ -152,8 +261,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void linkedListAppendMethodTests() {
-    int[] testCount = {0, 0};
+  private static void linkedListAppendMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("LinkedList Append Method");
     runTest(linkedListAppendMethodTest1, "has append method", testCount);
     runTest(linkedListAppendMethodTest2, "able to append a node into empty linked list", testCount);
@@ -162,8 +272,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void linkedListDeleteMethodTests() {
-    int[] testCount = {0, 0};
+  private static void linkedListDeleteMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("LinkedList Delete Method");
     runTest(linkedListDeleteMethodTest1, "has delete method", testCount);
     runTest(linkedListDeleteMethodTest2, "able to delete a node from the head", testCount);
@@ -173,8 +284,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void linkedListContainsMethodTests() {
-    int[] testCount = {0, 0};
+  private static void linkedListContainsMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("LinkedList Contains Method");
     runTest(linkedListContainsMethodTest1, "has contains method", testCount);
     runTest(linkedListContainsMethodTest2, "returns true if linked list contains value", testCount);
@@ -184,28 +296,33 @@ class Test{
 
 
 
-  private static bool listNodeClassTest1() {
-      ListNode node = new ListNode(0);
-      return node.GetType() == typeof(ListNode);
+  private static bool listNodeClassTest1()
+  {
+    ListNode node = new ListNode(0);
+    return node.GetType() == typeof(ListNode);
   }
 
-  private static bool listNodeClassTest2() {
+  private static bool listNodeClassTest2()
+  {
     ListNode node = new ListNode(0);
     return node.GetType().GetField("value") != null;
   }
 
-  private static bool listNodeClassTest3() {
+  private static bool listNodeClassTest3()
+  {
     ListNode node = new ListNode(5);
     return node.value == 5;
   }
 
-  private static bool listNodeClassTest4() {
+  private static bool listNodeClassTest4()
+  {
     ListNode node = new ListNode(5);
     node.value = 1;
     return node.value == 1;
   }
 
-  private static bool listNodeClassTest5() {
+  private static bool listNodeClassTest5()
+  {
     ListNode node1 = new ListNode(5);
     ListNode node2 = new ListNode(10);
     node1.next = node2;
@@ -213,222 +330,288 @@ class Test{
   }
 
 
-  private static bool linkedListClassTest1() {
+  private static bool linkedListClassTest1()
+  {
     LinkedList node = new LinkedList();
     return node.GetType() == typeof(LinkedList);
   }
 
-  private static bool linkedListClassTest2() {
+  private static bool linkedListClassTest2()
+  {
     LinkedList node = new LinkedList();
     return node.GetType().GetField("head") != null;
   }
 
-  private static bool linkedListClassTest3() {
+  private static bool linkedListClassTest3()
+  {
     LinkedList node = new LinkedList();
     return node.GetType().GetField("tail") != null;
   }
 
-  private static bool linkedListClassTest4() {
+  private static bool linkedListClassTest4()
+  {
     LinkedList node = new LinkedList();
     return node.GetType().GetField("length") != null;
   }
 
-  private static bool linkedListClassTest5() {
+  private static bool linkedListClassTest5()
+  {
     LinkedList linkedList = new LinkedList();
     return linkedList.head == null;
   }
 
-  private static bool linkedListClassTest6() {
+  private static bool linkedListClassTest6()
+  {
     LinkedList linkedList = new LinkedList();
     return linkedList.tail == null;
   }
 
-  private static bool linkedListClassTest7() {
+  private static bool linkedListClassTest7()
+  {
     LinkedList linkedList = new LinkedList();
     return linkedList.length == 0;
   }
 
 
 
-  private static bool linkedListInsertMethodTest1() {
+  private static bool linkedListInsertMethodTest1()
+  {
     return new LinkedList().GetType().GetMethod("insert") != null;
   }
 
-  private static bool linkedListInsertMethodTest2() {
+  private static bool linkedListInsertMethodTest2()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
-      linkedList.insert(5,0);
+    try
+    {
+      linkedList.insert(5, 0);
       return linkedList.length == 1 && linkedList.head.value == 5 && linkedList.tail.value == 5;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
-  private static bool linkedListInsertMethodTest3() {
+  private static bool linkedListInsertMethodTest3()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
-      linkedList.insert(5,0);
+    try
+    {
+      linkedList.insert(5, 0);
       linkedList.insert(10, 1);
       return linkedList.length == 2 && linkedList.head.value == 5 && linkedList.tail.value == 10;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
-  private static bool linkedListInsertMethodTest4() {
+  private static bool linkedListInsertMethodTest4()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
-      linkedList.insert(5,0);
-      linkedList.insert(10,0);
+    try
+    {
+      linkedList.insert(5, 0);
+      linkedList.insert(10, 0);
       return linkedList.length == 2 && linkedList.head.value == 10 && linkedList.tail.value == 5;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
-  private static bool linkedListInsertMethodTest5() {
+  private static bool linkedListInsertMethodTest5()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
-      linkedList.insert(5,-1);
-      linkedList.insert(10,3);
+    try
+    {
+      linkedList.insert(5, -1);
+      linkedList.insert(10, 3);
       return linkedList.length == 0 && linkedList.head == null && linkedList.tail == null;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
 
 
-  private static bool linkedListAppendMethodTest1() {
+  private static bool linkedListAppendMethodTest1()
+  {
     return new LinkedList().GetType().GetMethod("append") != null;
   }
 
-  private static bool linkedListAppendMethodTest2() {
+  private static bool linkedListAppendMethodTest2()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
+    try
+    {
       linkedList.append(5);
       return linkedList.length == 1 && linkedList.head.value == 5 && linkedList.tail.value == 5;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
-  private static bool linkedListAppendMethodTest3() {
+  private static bool linkedListAppendMethodTest3()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
+    try
+    {
       linkedList.append(5);
       linkedList.append(10);
       return linkedList.length == 2 && linkedList.head.value == 5 && linkedList.tail.value == 10;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
-  private static bool linkedListAppendMethodTest4() {
+  private static bool linkedListAppendMethodTest4()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
+    try
+    {
       linkedList.append(5);
       linkedList.append(10);
       linkedList.append(15);
       return linkedList.length == 3 && linkedList.head.value == 5 && linkedList.tail.value == 15;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
 
 
-  private static bool linkedListDeleteMethodTest1() {
+  private static bool linkedListDeleteMethodTest1()
+  {
     return new LinkedList().GetType().GetMethod("delete") != null;
   }
 
-  private static bool linkedListDeleteMethodTest2() {
+  private static bool linkedListDeleteMethodTest2()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
+    try
+    {
       linkedList.append(5);
       linkedList.append(10);
       linkedList.delete(0);
       return linkedList.length == 1 && linkedList.head.value == 10 && linkedList.tail.value == 10;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
-  private static bool linkedListDeleteMethodTest3() {
+  private static bool linkedListDeleteMethodTest3()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
+    try
+    {
       linkedList.append(5);
       linkedList.append(10);
       linkedList.append(15);
       linkedList.delete(1);
       return linkedList.length == 2 && linkedList.head.value == 5 && linkedList.tail.value == 15;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
-  private static bool linkedListDeleteMethodTest4() {
+  private static bool linkedListDeleteMethodTest4()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
+    try
+    {
       linkedList.append(5);
       linkedList.delete(0);
       return linkedList.length == 0 && linkedList.head == null && linkedList.tail == null;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
-  private static bool linkedListDeleteMethodTest5() {
+  private static bool linkedListDeleteMethodTest5()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
+    try
+    {
       linkedList.append(5);
       linkedList.delete(-1);
       linkedList.delete(2);
       return linkedList.length == 1 && linkedList.head.value == 5 && linkedList.tail.value == 5;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
 
-  private static bool linkedListContainsMethodTest1() {
+  private static bool linkedListContainsMethodTest1()
+  {
     return new LinkedList().GetType().GetMethod("contains") != null;
   }
 
-  private static bool linkedListContainsMethodTest2() {
+  private static bool linkedListContainsMethodTest2()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
+    try
+    {
       linkedList.append(5);
       linkedList.append(10);
       linkedList.append(15);
       return linkedList.contains(15);
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
-  private static bool linkedListContainsMethodTest3() {
+  private static bool linkedListContainsMethodTest3()
+  {
     LinkedList linkedList = new LinkedList();
-    try {
+    try
+    {
       linkedList.append(5);
       linkedList.append(10);
       linkedList.append(15);
       return linkedList.contains(8) == false;
-    } catch {
+    }
+    catch
+    {
       return false;
     }
   }
 
 
-  private static void runTest(Func<bool> test, string testName, int[] testCount){
-      testCount[1]++;
-      bool testPassed = false;
-      // Attempt to run test and suppress exceptions on failure
-      try {
-          testPassed = test();
-          if(testPassed) testCount[0]++;
-      } catch {}
-      string result = "  " + (testCount[1] + ")   ") + testPassed + " : " + testName;
-      Console.WriteLine(result);
+  private static void runTest(Func<bool> test, string testName, int[] testCount)
+  {
+    testCount[1]++;
+    bool testPassed = false;
+    // Attempt to run test and suppress exceptions on failure
+    try
+    {
+      testPassed = test();
+      if (testPassed) testCount[0]++;
+    }
+    catch { }
+    string result = "  " + (testCount[1] + ")   ") + testPassed + " : " + testName;
+    Console.WriteLine(result);
   }
 }
