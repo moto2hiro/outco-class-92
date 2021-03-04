@@ -76,74 +76,138 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-class Heap {
+class Heap
+{
 
   public List<int> storage;
   public string type;
+  public const string TYPE_MIN = "min";
+  public const string TYPE_MAX = "max";
 
-
-  public Heap(string type) {
-    //YOUR WORK HERE
+  public Heap(string type)
+  {
+    this.type = type;
+    storage = new List<int>();
   }
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public bool compare(int a, int b){
-    //YOUR WORK HERE
-    return false;
+  // Time Complexity: O(1)
+  // Auxiliary Space Complexity: O(1)
+  public bool compare(int a, int b)
+  {
+    if (storage == null || storage.Count() - 1 < a || storage.Count() - 1 < b) return false;
+    return (type == TYPE_MIN) ? storage[a] < storage[b] : storage[a] > storage[b];
   }
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public void swap(int index1, int index2){
-    //YOUR WORK HERE
+  // Time Complexity: O(1)
+  // Auxiliary Space Complexity: O(1)
+  public void swap(int index1, int index2)
+  {
+    if (storage == null || storage.Count() - 1 < index1 || storage.Count() - 1 < index2) return;
+
+    var tmp = storage[index1];
+    storage[index1] = storage[index2];
+    storage[index2] = tmp;
   }
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public int peak(){
-    //YOUR WORK HERE
-    return -1;
+  // Time Complexity: O(1)
+  // Auxiliary Space Complexity: O(1)
+  public int peak()
+  {
+    return (storage != null) ? storage[0] : 0;
   }
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public int size(){
-    //YOUR WORK HERE
-    return -1;
+  // Time Complexity: O(1)
+  // Auxiliary Space Complexity: O(1)
+  public int size()
+  {
+    return (storage != null) ? storage.Count() : 0;
   }
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public void insert(int value){
-    //YOUR WORK HERE
+  // Time Complexity: O(1)
+  // Auxiliary Space Complexity: O(1)
+  public void insert(int value)
+  {
+    storage = storage ?? new List<int>();
+    storage.Add(value);
+
+    bubbleUp(size() - 1);
   }
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public void bubbleUp(int index){
-    //YOUR WORK HERE
+  // Time Complexity: O(logN)
+  // Auxiliary Space Complexity: O(1)
+  public void bubbleUp(int index)
+  {
+    if (storage == null || storage.Count() - 1 < index) return;
+
+    var parent = getParent(index);
+    while (index > 0 && compare(index, parent))
+    {
+      swap(index, parent);
+      index = parent;
+      parent = getParent(index);
+    }
   }
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public int removePeak(){
-    //YOUR WORK HERE
-    return -1;
+  public int getParent(int index)
+  {
+    return (index % 2 == 0) ? (index - 2) / 2 : (index - 1) / 2;
   }
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public void bubbleDown(int index){
-    //YOUR WORK HERE
+  // Time Complexity: O(1)
+  // Auxiliary Space Complexity: O(1)
+  public int removePeak()
+  {
+    storage = storage ?? new List<int>();
+    var ret = storage.Any() ? storage[0] : 0;
+    swap(0, size() - 1);
+    storage.RemoveAt(size() - 1);
+    bubbleDown(0);
+    return ret;
+  }
+
+  // Time Complexity: O(logN)
+  // Auxiliary Space Complexity: O(1)
+  public void bubbleDown(int index)
+  {
+    var child = getChild(index);
+
+    while (child < size() && compare(child, index))
+    {
+      swap(child, index);
+      index = child;
+      child = getChild(index);
+    }
+  }
+
+  public int getChild(int parent)
+  {
+    var child1 = 2 * parent + 1;
+    var child2 = 2 * parent + 2;
+    if (child1 >= size()) return child1;
+    if (child2 >= size()) return child1;
+    return (compare(child1, child2)) ? child1 : child2;
   }
 
 
-  // Time Complexity:
-  // Auxiliary Space Complexity:
-  public bool remove(int value){
-    //YOUR WORK HERE
-    return false;
+  // Time Complexity: O(N)
+  // Auxiliary Space Complexity: O(1)
+  public bool remove(int value)
+  {
+    if (storage == null) return false;
+
+    var idx = null as int?;
+    for (var i = 0; i < storage.Count(); i++)
+    {
+      if (storage[i] == value) idx = i;
+    }
+
+    if (idx == null) return false;
+    swap(idx.GetValueOrDefault(), size() - 1);
+    storage.RemoveAt(size() - 1);
+    bubbleUp(idx.GetValueOrDefault());
+    bubbleDown(idx.GetValueOrDefault());
+
+    return true;
   }
 }
 
@@ -153,9 +217,11 @@ class Heap {
 ////////////////////////////////////////////////////////////
 
 // use the Test class to run the test cases
-class Test{
+class Test
+{
 
-  public static void Main() {
+  public static void Main()
+  {
     heapClassTests();
     heapCompareMethodTests();
     heapSwapMethodTests();
@@ -168,8 +234,9 @@ class Test{
     heapRemoveMethodTests();
   }
 
-  private static void heapClassTests() {
-    int[] testCount = {0, 0};
+  private static void heapClassTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Heap Class");
     runTest(heapClassTest1, "able to create an instance", testCount);
     runTest(heapClassTest2, "has storage field", testCount);
@@ -180,8 +247,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void heapCompareMethodTests() {
-    int[] testCount = {0, 0};
+  private static void heapCompareMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Heap compare method");
     runTest(heapCompareMethodTest1, "has compare method", testCount);
     runTest(heapCompareMethodTest2, "returns true for minheap if element at first argument index is less than element at second argument index", testCount);
@@ -191,16 +259,18 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void heapSwapMethodTests() {
-    int[] testCount = {0, 0};
+  private static void heapSwapMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Heap swap method");
     runTest(heapSwapMethodTest1, "has swap method", testCount);
     runTest(heapSwapMethodTest2, "should be able to swap the locations of two elements given two indices", testCount);
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void heapPeakMethodTests() {
-    int[] testCount = {0, 0};
+  private static void heapPeakMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Heap peak method");
     runTest(heapPeakMethodTest1, "has peak method", testCount);
     runTest(heapPeakMethodTest2, "should return the 0th element of the storage array", testCount);
@@ -209,16 +279,18 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void heapSizeMethodTests() {
-    int[] testCount = {0, 0};
+  private static void heapSizeMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Heap size method");
     runTest(heapSizeMethodTest1, "has size method", testCount);
     runTest(heapSizeMethodTest2, "returns number of elements in the storage array", testCount);
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void heapInsertMethodTests() {
-    int[] testCount = {0, 0};
+  private static void heapInsertMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Heap insert method");
     runTest(heapInsertMethodTest1, "has insert method", testCount);
     runTest(heapInsertMethodTest2, "should be able to insert a single element", testCount);
@@ -227,8 +299,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void heapBubbleUpMethodTests() {
-    int[] testCount = {0, 0};
+  private static void heapBubbleUpMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Heap bubbleUp method");
     runTest(heapBubbleUpMethodTest1, "has bubbleUp method", testCount);
     runTest(heapBubbleUpMethodTest2, "should be able to \'bubble up\' an element if its minheap condition is not fulfilled", testCount);
@@ -238,8 +311,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void heapRemovePeakMethodTests() {
-    int[] testCount = {0, 0};
+  private static void heapRemovePeakMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Heap removePeak method");
     runTest(heapRemovePeakMethodTest1, "has removePeak method", testCount);
     runTest(heapRemovePeakMethodTest2, "should be able to remove a single element", testCount);
@@ -248,8 +322,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void heapBubbleDownMethodTests() {
-    int[] testCount = {0, 0};
+  private static void heapBubbleDownMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Heap bubbleDown method");
     runTest(heapBubbleDownMethodTest1, "has bubbleDown method", testCount);
     runTest(heapBubbleDownMethodTest2, "should be able to \'bubble down\' an element if its minheap condition is not fulfilled", testCount);
@@ -259,8 +334,9 @@ class Test{
     Console.WriteLine("PASSED: " + testCount[0] + " / " + testCount[1] + "\n\n");
   }
 
-  private static void heapRemoveMethodTests() {
-    int[] testCount = {0, 0};
+  private static void heapRemoveMethodTests()
+  {
+    int[] testCount = { 0, 0 };
     Console.WriteLine("Heap remove method");
     runTest(heapRemoveMethodTest1, "has remove method", testCount);
     runTest(heapRemoveMethodTest2, "is able to remove specified value from minheap", testCount);
@@ -273,17 +349,21 @@ class Test{
   }
 
 
-  private static bool heapClassTest1() {
+  private static bool heapClassTest1()
+  {
     return new Heap("max").GetType() == typeof(Heap);
   }
-  private static bool heapClassTest2() {
+  private static bool heapClassTest2()
+  {
     return new Heap("max").GetType().GetField("storage") != null;
   }
-  private static bool heapClassTest3() {
+  private static bool heapClassTest3()
+  {
     return new Heap("max").GetType().GetField("type") != null;
   }
 
-  private static bool heapClassTest4() {
+  private static bool heapClassTest4()
+  {
     Heap heap = new Heap("max");
     Type listType = heap.storage.GetType();
     bool isList = listType.IsGenericType;
@@ -292,44 +372,51 @@ class Test{
     return isList;
   }
 
-  private static bool heapClassTest5() {
+  private static bool heapClassTest5()
+  {
     Heap heap = new Heap("min");
     return heap.type.Equals("min");
   }
 
-  private static bool heapClassTest6() {
+  private static bool heapClassTest6()
+  {
     Heap heap = new Heap("max");
     return heap.type.Equals("max");
   }
 
 
 
-  private static bool heapCompareMethodTest1() {
+  private static bool heapCompareMethodTest1()
+  {
     return new Heap("max").GetType().GetMethod("compare") != null;
   }
 
-  private static bool heapCompareMethodTest2() {
+  private static bool heapCompareMethodTest2()
+  {
     Heap heap = new Heap("min");
     heap.storage.Add(1);
     heap.storage.Add(10);
     return heap.compare(0, 1) == true;
   }
 
-  private static bool heapCompareMethodTest3() {
+  private static bool heapCompareMethodTest3()
+  {
     Heap heap = new Heap("min");
     heap.storage.Add(10);
     heap.storage.Add(1);
     return heap.compare(0, 1) == false;
   }
 
-  private static bool heapCompareMethodTest4() {
+  private static bool heapCompareMethodTest4()
+  {
     Heap heap = new Heap("max");
     heap.storage.Add(10);
     heap.storage.Add(1);
     return heap.compare(0, 1) == true;
   }
 
-  private static bool heapCompareMethodTest5() {
+  private static bool heapCompareMethodTest5()
+  {
     Heap heap = new Heap("max");
     heap.storage.Add(1);
     heap.storage.Add(10);
@@ -337,11 +424,13 @@ class Test{
   }
 
 
-  private static bool heapSwapMethodTest1() {
+  private static bool heapSwapMethodTest1()
+  {
     return new Heap("max").GetType().GetMethod("swap") != null;
   }
 
-  private static bool heapSwapMethodTest2() {
+  private static bool heapSwapMethodTest2()
+  {
     Heap heap = new Heap("min");
     heap.storage.Add(1);
     heap.storage.Add(5);
@@ -351,11 +440,13 @@ class Test{
   }
 
 
-  private static bool heapPeakMethodTest1() {
+  private static bool heapPeakMethodTest1()
+  {
     return new Heap("max").GetType().GetMethod("peak") != null;
   }
 
-  private static bool heapPeakMethodTest2() {
+  private static bool heapPeakMethodTest2()
+  {
     Heap heap = new Heap("min");
     heap.storage.Add(1);
     heap.storage.Add(5);
@@ -363,7 +454,8 @@ class Test{
     return heap.peak() == 1;
   }
 
-  private static bool heapPeakMethodTest3() {
+  private static bool heapPeakMethodTest3()
+  {
     Heap heap = new Heap("min");
     heap.insert(2);
     heap.insert(5);
@@ -372,7 +464,8 @@ class Test{
     return heap.peak() == 1;
   }
 
-  private static bool heapPeakMethodTest4() {
+  private static bool heapPeakMethodTest4()
+  {
     Heap heap = new Heap("max");
     heap.insert(2);
     heap.insert(5);
@@ -383,11 +476,13 @@ class Test{
 
 
 
-  private static bool heapSizeMethodTest1() {
+  private static bool heapSizeMethodTest1()
+  {
     return new Heap("max").GetType().GetMethod("size") != null;
   }
 
-  private static bool heapSizeMethodTest2() {
+  private static bool heapSizeMethodTest2()
+  {
     Heap heap = new Heap("min");
     heap.storage.Add(1);
     heap.storage.Add(5);
@@ -396,17 +491,20 @@ class Test{
   }
 
 
-  private static bool heapInsertMethodTest1() {
+  private static bool heapInsertMethodTest1()
+  {
     return new Heap("max").GetType().GetMethod("insert") != null;
   }
 
-  private static bool heapInsertMethodTest2() {
+  private static bool heapInsertMethodTest2()
+  {
     Heap heap = new Heap("min");
     heap.insert(5);
     return heap.storage[0] == 5;
   }
 
-  private static bool heapInsertMethodTest3() {
+  private static bool heapInsertMethodTest3()
+  {
     Heap heap = new Heap("min");
     heap.insert(5);
     heap.insert(10);
@@ -417,7 +515,8 @@ class Test{
     return heap.peak() == 1;
   }
 
-  private static bool heapInsertMethodTest4() {
+  private static bool heapInsertMethodTest4()
+  {
     Heap heap = new Heap("max");
     heap.insert(5);
     heap.insert(10);
@@ -430,153 +529,177 @@ class Test{
 
 
 
-  private static bool heapBubbleUpMethodTest1() {
+  private static bool heapBubbleUpMethodTest1()
+  {
     return new Heap("max").GetType().GetMethod("bubbleUp") != null;
   }
 
-  private static bool heapBubbleUpMethodTest2() {
+  private static bool heapBubbleUpMethodTest2()
+  {
     Heap heap = new Heap("min");
-    heap.storage = new List<int>(){2,4,7,6,9,10,8,1};
+    heap.storage = new List<int>() { 2, 4, 7, 6, 9, 10, 8, 1 };
     heap.bubbleUp(7);
-    return heap.storage.SequenceEqual(new List<int>(){1,2,7,4,9,10,8,6});
+    return heap.storage.SequenceEqual(new List<int>() { 1, 2, 7, 4, 9, 10, 8, 6 });
   }
 
-  private static bool heapBubbleUpMethodTest3() {
+  private static bool heapBubbleUpMethodTest3()
+  {
     Heap heap = new Heap("max");
-    heap.storage = new List<int>(){9,8,6,7,3,5,2,10};
+    heap.storage = new List<int>() { 9, 8, 6, 7, 3, 5, 2, 10 };
     heap.bubbleUp(7);
-    return heap.storage.SequenceEqual(new List<int>(){10,9,6,8,3,5,2,7});
+    return heap.storage.SequenceEqual(new List<int>() { 10, 9, 6, 8, 3, 5, 2, 7 });
   }
 
-  private static bool heapBubbleUpMethodTest4() {
+  private static bool heapBubbleUpMethodTest4()
+  {
     Heap heap = new Heap("min");
-    heap.storage = new List<int>(){1,2,7,4,9,10,8,6};
+    heap.storage = new List<int>() { 1, 2, 7, 4, 9, 10, 8, 6 };
     heap.bubbleUp(7);
-    return heap.storage.SequenceEqual(new List<int>(){1,2,7,4,9,10,8,6});
+    return heap.storage.SequenceEqual(new List<int>() { 1, 2, 7, 4, 9, 10, 8, 6 });
   }
 
-  private static bool heapBubbleUpMethodTest5() {
+  private static bool heapBubbleUpMethodTest5()
+  {
     Heap heap = new Heap("max");
-    heap.storage = new List<int>(){10,9,6,8,3,5,2,7};
+    heap.storage = new List<int>() { 10, 9, 6, 8, 3, 5, 2, 7 };
     heap.bubbleUp(7);
-    return heap.storage.SequenceEqual(new List<int>(){10,9,6,8,3,5,2,7});
+    return heap.storage.SequenceEqual(new List<int>() { 10, 9, 6, 8, 3, 5, 2, 7 });
   }
 
 
-  private static bool heapRemovePeakMethodTest1() {
+  private static bool heapRemovePeakMethodTest1()
+  {
     return new Heap("max").GetType().GetMethod("removePeak") != null;
   }
 
-  private static bool heapRemovePeakMethodTest2() {
+  private static bool heapRemovePeakMethodTest2()
+  {
     Heap heap = new Heap("min");
     heap.insert(5);
     heap.removePeak();
     return heap.storage.Count == 0;
   }
 
-  private static bool heapRemovePeakMethodTest3() {
+  private static bool heapRemovePeakMethodTest3()
+  {
     Heap heap = new Heap("min");
-    heap.storage = new List<int>(){1,2,7,4,9,10,8,6};
+    heap.storage = new List<int>() { 1, 2, 7, 4, 9, 10, 8, 6 };
     int peak = heap.removePeak();
-    return peak == 1 && heap.storage.SequenceEqual(new List<int>(){2,4,7,6,9,10,8});
+    return peak == 1 && heap.storage.SequenceEqual(new List<int>() { 2, 4, 7, 6, 9, 10, 8 });
   }
 
-  private static bool heapRemovePeakMethodTest4() {
+  private static bool heapRemovePeakMethodTest4()
+  {
     Heap heap = new Heap("max");
-    heap.storage = new List<int>(){10,9,6,8,3,5,2,7};
+    heap.storage = new List<int>() { 10, 9, 6, 8, 3, 5, 2, 7 };
     int peak = heap.removePeak();
-    return peak == 10 && heap.storage.SequenceEqual(new List<int>(){9,8,6,7,3,5,2});
+    return peak == 10 && heap.storage.SequenceEqual(new List<int>() { 9, 8, 6, 7, 3, 5, 2 });
   }
 
 
-  private static bool heapBubbleDownMethodTest1() {
+  private static bool heapBubbleDownMethodTest1()
+  {
     return new Heap("max").GetType().GetMethod("bubbleDown") != null;
   }
 
-  private static bool heapBubbleDownMethodTest2() {
+  private static bool heapBubbleDownMethodTest2()
+  {
     Heap heap = new Heap("min");
-    heap.storage = new List<int>(){10,1,2,6,4,9,8,7};
+    heap.storage = new List<int>() { 10, 1, 2, 6, 4, 9, 8, 7 };
     heap.bubbleDown(0);
-    return heap.storage.SequenceEqual(new List<int>(){1,4,2,6,10,9,8,7});
+    return heap.storage.SequenceEqual(new List<int>() { 1, 4, 2, 6, 10, 9, 8, 7 });
   }
 
-  private static bool heapBubbleDownMethodTest3() {
+  private static bool heapBubbleDownMethodTest3()
+  {
     Heap heap = new Heap("max");
-    heap.storage = new List<int>(){2,10,9,5,8,3,6,7};
+    heap.storage = new List<int>() { 2, 10, 9, 5, 8, 3, 6, 7 };
     heap.bubbleDown(0);
-    return heap.storage.SequenceEqual(new List<int>(){10,8,9,5,2,3,6,7});
+    return heap.storage.SequenceEqual(new List<int>() { 10, 8, 9, 5, 2, 3, 6, 7 });
   }
 
-  private static bool heapBubbleDownMethodTest4() {
+  private static bool heapBubbleDownMethodTest4()
+  {
     Heap heap = new Heap("min");
-    heap.storage = new List<int>(){1,2,7,4,9,10,8,6};
+    heap.storage = new List<int>() { 1, 2, 7, 4, 9, 10, 8, 6 };
     heap.bubbleDown(0);
-    return heap.storage.SequenceEqual(new List<int>(){1,2,7,4,9,10,8,6});
+    return heap.storage.SequenceEqual(new List<int>() { 1, 2, 7, 4, 9, 10, 8, 6 });
   }
 
-  private static bool heapBubbleDownMethodTest5() {
+  private static bool heapBubbleDownMethodTest5()
+  {
     Heap heap = new Heap("max");
-    heap.storage = new List<int>(){10,9,6,8,3,5,2,7};
+    heap.storage = new List<int>() { 10, 9, 6, 8, 3, 5, 2, 7 };
     heap.bubbleDown(0);
-    return heap.storage.SequenceEqual(new List<int>(){10,9,6,8,3,5,2,7});
+    return heap.storage.SequenceEqual(new List<int>() { 10, 9, 6, 8, 3, 5, 2, 7 });
   }
 
 
-  private static bool heapRemoveMethodTest1() {
+  private static bool heapRemoveMethodTest1()
+  {
     return new Heap("max").GetType().GetMethod("remove") != null;
   }
 
-  private static bool heapRemoveMethodTest2() {
+  private static bool heapRemoveMethodTest2()
+  {
     Heap heap = new Heap("min");
-    heap.storage = new List<int>(){1,2,7,4,9,10,8,6};
+    heap.storage = new List<int>() { 1, 2, 7, 4, 9, 10, 8, 6 };
     bool removed = heap.remove(10);
-    return removed && heap.storage.SequenceEqual(new List<int>(){1,2,6,4,9,7,8});
+    return removed && heap.storage.SequenceEqual(new List<int>() { 1, 2, 6, 4, 9, 7, 8 });
   }
 
-  private static bool heapRemoveMethodTest3() {
+  private static bool heapRemoveMethodTest3()
+  {
     Heap heap = new Heap("max");
-    heap.storage = new List<int>(){10,9,6,8,3,5,2,7};
+    heap.storage = new List<int>() { 10, 9, 6, 8, 3, 5, 2, 7 };
     bool removed = heap.remove(6);
-    return removed && heap.storage.SequenceEqual(new List<int>(){10,9,7,8,3,5,2});
+    return removed && heap.storage.SequenceEqual(new List<int>() { 10, 9, 7, 8, 3, 5, 2 });
   }
 
-  private static bool heapRemoveMethodTest4() {
+  private static bool heapRemoveMethodTest4()
+  {
     Heap heap = new Heap("min");
-    heap.storage = new List<int>(){1,2,7,4,9,10,8,6};
+    heap.storage = new List<int>() { 1, 2, 7, 4, 9, 10, 8, 6 };
     bool removed = heap.remove(6);
-    return removed && heap.storage.SequenceEqual(new List<int>(){1,2,7,4,9,10,8});
+    return removed && heap.storage.SequenceEqual(new List<int>() { 1, 2, 7, 4, 9, 10, 8 });
   }
 
-  private static bool heapRemoveMethodTest5() {
+  private static bool heapRemoveMethodTest5()
+  {
     Heap heap = new Heap("max");
-    heap.storage = new List<int>(){10,9,6,8,3,5,2,7};
+    heap.storage = new List<int>() { 10, 9, 6, 8, 3, 5, 2, 7 };
     bool removed = heap.remove(7);
-    return removed && heap.storage.SequenceEqual(new List<int>(){10,9,6,8,3,5,2});
+    return removed && heap.storage.SequenceEqual(new List<int>() { 10, 9, 6, 8, 3, 5, 2 });
   }
 
-  private static bool heapRemoveMethodTest6() {
+  private static bool heapRemoveMethodTest6()
+  {
     Heap heap = new Heap("min");
-    heap.storage = new List<int>(){1,2,7,4,9,10,8,6};
+    heap.storage = new List<int>() { 1, 2, 7, 4, 9, 10, 8, 6 };
     heap.remove(3);
-    return heap.storage.SequenceEqual(new List<int>(){1,2,7,4,9,10,8,6});
+    return heap.storage.SequenceEqual(new List<int>() { 1, 2, 7, 4, 9, 10, 8, 6 });
   }
 
-  private static bool heapRemoveMethodTest7() {
+  private static bool heapRemoveMethodTest7()
+  {
     Heap heap = new Heap("max");
-    heap.storage = new List<int>(){10,9,6,8,3,5,2,7};
+    heap.storage = new List<int>() { 10, 9, 6, 8, 3, 5, 2, 7 };
     heap.remove(4);
-    return heap.storage.SequenceEqual(new List<int>(){10,9,6,8,3,5,2,7});
+    return heap.storage.SequenceEqual(new List<int>() { 10, 9, 6, 8, 3, 5, 2, 7 });
   }
 
-  private static void runTest(Func<bool> test, string testName, int[] testCount){
-      testCount[1]++;
-      bool testPassed = false;
-      // Attempt to run test and suppress exceptions on failure
-      try {
-          testPassed = test();
-          if(testPassed) testCount[0]++;
-      } catch {}
-      string result = "  " + (testCount[1] + ")   ") + testPassed + " : " + testName;
-      Console.WriteLine(result);
+  private static void runTest(Func<bool> test, string testName, int[] testCount)
+  {
+    testCount[1]++;
+    bool testPassed = false;
+    // Attempt to run test and suppress exceptions on failure
+    try
+    {
+      testPassed = test();
+      if (testPassed) testCount[0]++;
+    }
+    catch { }
+    string result = "  " + (testCount[1] + ")   ") + testPassed + " : " + testName;
+    Console.WriteLine(result);
   }
 }
